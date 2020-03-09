@@ -1,0 +1,82 @@
+.swipe {
+  overscroll-behavior-y: contain;
+  padding: 0;
+  height: 90vh;
+  width: 68vw;
+  user-select: none;
+  font-family: Raleway, sans-serif;
+  overflow: hidden;
+  position: absolute;
+}
+
+#swipe > div {
+  position: absolute;
+  margin-top: 0rem;
+  width: 70vw;
+  will-change: transform;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.swipe > div > div {
+  padding: 5px;
+  background-color: white;
+  background-size: auto 85%;
+  background-repeat: no-repeat;
+  background-position: center center;
+  width: 300px;
+  max-width: 300px;
+  height: 500px;
+  max-height: 470px;
+  will-change: transform;
+  border-radius: 10px;
+  box-shadow: 0 12.5px 20px -10px rgba(50, 50, 73, 0.4),
+    0 10px 10px -10px rgba(50, 50, 73, 0.3);
+}
+
+.swipe > img {
+  height: 380px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+button[aria-label="previous"],
+button[aria-label="next"] {
+  background: salmon !important;
+  color: black !important;
+}
+
+.swipeh2 {
+  display: inline-block;
+  margin-right: 10px;
+}
+
+.swipeh2:nth-of-type(2) {
+  opacity: 0.7;
+  font-size: 1.35rem;
+}
+
+.swipeh5 {
+  margin-top: -1;
+  margin-left: 2px;
+  color: rgb(65, 62, 62);
+  font-size: 0.8rem;
+}
+.swipeh5:last-of-type {
+  color: rgb(32, 32, 32);
+  font-size: 0.8rem;
+}
+
+.swipecard,
+.swipecard > div {
+  height: 300px !important;
+}
+
+.slider-control-bottomcenter {
+  bottom: -15px !important;
+}
+
+.slider-control-bottomcenter > ul > li > button {
+  color: salmon !important;
+}

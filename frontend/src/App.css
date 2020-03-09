@@ -1,0 +1,124 @@
+@import url("https://fonts.googleapis.com/css?family=Sriracha&display=swap");
+
+.App-body-landing {
+  background-image: url(./image/background.jpg);
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+  min-width: 100vw;
+  font-family: "Sriracha", cursive;
+  overflow: hidden;
+}
+
+.App-jumbotron {
+  margin-top: 1vh;
+}
+
+.App-Card-Content-Main {
+  background: rgba(44, 62, 80, 0.3);
+  width: 35vw;
+  padding-top: 1vh;
+  padding-left: 1vw;
+  padding-right: 1vw;
+  padding-bottom: 1vw;
+  text-align: center;
+  color: white;
+  font-size: 5vh;
+  margin-top: 3vh;
+}
+
+.App-text {
+  font-size: 2vh;
+  font-family: "Roboto", sans-serif;
+  margin-bottom: 0vh;
+}
+
+.App-footer {
+  background: rgba(44, 62, 80, 0.3);
+}
+
+.App-footer-text {
+  color: white;
+  padding-top: 1vh;
+  font-family: "Roboto", sans-serif;
+}
+
+.App-btn {
+  font-family: "Roboto", sans-serif;
+}
+
+.App-desc {
+  color: white;
+  font-size: 8vh;
+}
+
+.App-modal {
+  background: rgba(44, 62, 80, 0.7);
+  font-family: "Roboto", sans-serif;
+}
+
+input,
+textarea {
+  background-color: #666;
+  color: #fff;
+}
+
+.card {
+  border: none !important;
+}
+
+.wrap {
+  display: flex;
+}
+.boxLeft {
+  height: 100vh;
+  width: 30vw;
+  background-color: #2f3640;
+  overflow-x: hidden;
+}
+.boxRight {
+  height: 100vh;
+  width: 70vw;
+  background-color: #dcdde1;
+  overflow-x: hidden;
+}
+
+.Login {
+  background: rgba(44, 62, 80, 0.3);
+}
+
+.RegisterMenu {
+  height: 25vh;
+  overflow-y: auto;
+}
+
+.scroll-matched {
+  height: 30rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.profileCard {
+  width: 30rem;
+  height: 36rem;
+  margin: 0 auto;
+  float: none;
+  background: white;
+  padding-left: 1vh;
+  padding-top: 1vh;
+  padding-right: 1vh;
+  padding-bottom: 1vh;
+}
+
+.descPet {
+  height: 10rem;
+  overflow: auto;
+}
+
+.btn-addpet {
+  background-color: #2f3640 !important;
+}
+
+.image-upload > input {
+  display: none;
+}
