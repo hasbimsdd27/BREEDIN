@@ -98,7 +98,7 @@ Wait till the application appear in your browser and now, you can explore Toon K
 
 ## Built With
 
-- [React Native](https://facebook.github.io/react-native/) - Front-end
+- [ReactJS](https://reactjs.org/) - Front-end
 - [Express JS](https://expressjs.com) - Back-end
 - [MySQL](https://www.mysql.com) - Database
 
