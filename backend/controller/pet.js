@@ -56,7 +56,7 @@ exports.addPet = async (req, res) => {
             model: User,
             as: "owner",
             attributes: {
-              exclude: ["email", "password", "createdAt", "updatedAt"]
+              exclude: ["password", "createdAt", "updatedAt"]
             }
           }
         ],
@@ -84,7 +84,10 @@ exports.addPet = async (req, res) => {
 
 exports.loadAllPet = async (req, res) => {
   try {
+    const breeder = req.user;
+    console.log(breeder);
     const allPet = await Pet.findAll({
+      where: { breeder },
       include: [
         {
           model: Species,
@@ -100,14 +103,16 @@ exports.loadAllPet = async (req, res) => {
           model: User,
           as: "owner",
           attributes: {
-            exclude: ["email", "password", "createdAt", "updatedAt"]
+            exclude: ["password", "createdAt", "updatedAt"]
           }
         }
       ],
       attributes: { exclude: ["species", "age", "breeder"] }
     });
 
-    res.status(200).send(allPet);
+    res
+      .status(200)
+      .send({ status: true, message: "get all pet success", data: allPet });
   } catch (err) {
     console.log(err);
   }
@@ -116,10 +121,12 @@ exports.loadAllPet = async (req, res) => {
 exports.updatePet = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, gender, spesies, age, about_pet, photo } = req.body;
+    console.log(id);
+    const { name, gender, age, about_pet } = req.body;
     let dataPet = await Pet.findOne({
       where: { id }
     });
+    console.log(dataPet);
     if (!dataPet) {
       res.status(404).send({ message: "Data not found" });
     } else {
@@ -128,12 +135,11 @@ exports.updatePet = async (req, res) => {
           .status(401)
           .send({ message: "You are not allowed to access this data" });
       } else {
-        const updatePet = await Pet.update(
+        await Pet.update(
           {
             name,
             gender,
-            species: spesies.id,
-            age: age.id,
+            age: age,
             about_pet,
             updatedAt: new Date()
           },
@@ -144,8 +150,7 @@ exports.updatePet = async (req, res) => {
           where: {
             name,
             gender,
-            species: spesies.id,
-            age: age.id,
+            age,
             breeder: req.user
           },
           include: [
@@ -163,7 +168,7 @@ exports.updatePet = async (req, res) => {
               model: User,
               as: "owner",
               attributes: {
-                exclude: ["email", "password", "createdAt", "updatedAt"]
+                exclude: ["password", "createdAt", "updatedAt"]
               }
             }
           ],
@@ -225,13 +230,17 @@ exports.detailPet = async (req, res) => {
           model: User,
           as: "owner",
           attributes: {
-            exclude: ["email", "password", "createdAt", "updatedAt"]
+            exclude: ["password", "createdAt", "updatedAt"]
           }
         }
       ]
     });
     if (petData.id == id) {
-      res.status(200).send(petData);
+      res.status(200).send({
+        status: true,
+        message: "get detail pet success",
+        data: petData
+      });
     } else {
       res.status(404).send({ message: "data not found" });
     }

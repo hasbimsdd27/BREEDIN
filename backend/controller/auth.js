@@ -4,6 +4,7 @@ const User = models.user;
 const Pet = models.pet;
 const Admin = models.admin;
 const bcrypt = require("bcrypt");
+const Payment = models.payment;
 
 exports.login = async (req, res) => {
   try {
@@ -17,17 +18,18 @@ exports.login = async (req, res) => {
           process.env.SECRET_KEY
         );
         res.status(200).send({
+          status: true,
           message: "login success",
-          data: { email: user.email, token: token }
+          data: { email: user.email, status: user.status, token: token }
         });
       } else {
-        res.status(401).send({ message: "invalid login" });
+        res.status(401).send({ status: false, message: "invalid login" });
       }
     } else {
-      res.status(401).send({ message: "invalid login" });
+      res.status(401).send({ status: false, message: "invalid login" });
     }
   } catch (err) {
-    console.log(err);
+    res.status(401).send({ status: false, message: "invalid login" });
   }
 };
 
@@ -41,7 +43,7 @@ exports.register = async (req, res) => {
     });
     if (!breederData) {
       let hash = bcrypt.hashSync(password, 10);
-      const breederInput = await User.create({
+      await User.create({
         breeder,
         email,
         password: hash,
@@ -51,6 +53,7 @@ exports.register = async (req, res) => {
         createdAt: new Date(),
         updatedAt: new Date()
       });
+
       breederData = await User.findOne({
         where: {
           breeder,
@@ -58,6 +61,14 @@ exports.register = async (req, res) => {
           phone,
           address
         }
+      });
+      await Payment.create({
+        no_rek: null,
+        proof_of_transfer: null,
+        user: breederData.id,
+        status: "free",
+        createdAt: new Date(),
+        updatedAt: new Date()
       });
       const token = jwt.sign(
         { user_id: breederData.id, user_name: breederData.breeder },
@@ -78,7 +89,11 @@ exports.register = async (req, res) => {
       let data = breederData;
       res.status(201).send({
         message: "successfully registered",
-        data
+        data: {
+          email: breederData.email,
+          status: breederData.status,
+          token: token
+        }
       });
     } else {
       res.status(409).send({ message: "email already registered" });

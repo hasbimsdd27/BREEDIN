@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Navbar,
   Card,
@@ -10,25 +10,63 @@ import {
   Modal,
   Carousel
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
 import Slider from "react-input-slider";
-import pets from "./swipe/dataSlot.json";
-import petsData from "./swipe/dataSlot.json";
+// import pets from "./swipe/dataSlot.json";
+// import petsData from "./swipe/dataSlot.json";
+import { connect } from "react-redux";
+import { getAllPet, getDetailPet } from "../_actions/pet";
+import { getAllAges } from "../_actions/age";
+import { getAllSpecies } from "../_actions/species";
+import { getPayment } from "../_actions/payment";
+import { logout } from "../_actions/auth";
+const Profile = props => {
+  const getPet = async () => {
+    await props.getAllPet();
+    await props.getDetailPet(localStorage.getItem("onPet"));
+  };
 
-export default function Profile(props) {
-  const [position, setPosition] = useState("profile");
-  return (
+  useEffect(() => {
+    getPet();
+    props.getAllAges();
+    props.getAllSpecies();
+    props.getPayment();
+  }, []);
+  const [logout, setLogout] = useState(false);
+  const fLogout = e => {
+    e.preventDefault();
+    localStorage.removeItem("onPet");
+    localStorage.removeItem("token");
+    window.location.reload();
+  };
+
+  const user = props.pet.detail.owner;
+  const Token = localStorage.getItem("token");
+  return !props.auth.isLogin && !Token ? (
+    <Redirect
+      to={{
+        pathname: "/"
+      }}
+    />
+  ) : props.pet.loading || !user ? (
+    <h1>Loading...</h1>
+  ) : (
     <div className="wrap">
       <div className="boxLeft">
-        <LeftBoxContent />
+        <LeftBoxContent
+          user={user}
+          Age={props.age}
+          Species={props.species}
+          flogout={fLogout}
+        />
       </div>
       <div className="boxRight">
-        {position === "profile" ? <PetProfile /> : (position === "edit" ? (<PetProfileEdit />):())}
+        <PetProfile pet={props.pet.detail} payment={props.payment.data} />
       </div>
     </div>
   );
 
-  function LeftBoxContent() {
+  function LeftBoxContent({ user, Age, Species, flogout }) {
     return (
       <>
         <Navbar
@@ -74,11 +112,19 @@ export default function Profile(props) {
             <Card.Body>
               <Row>
                 <Col>Email</Col>
-                <Col className="text-right">dummy@dummy.com</Col>
+                {user ? (
+                  <Col className="text-right">{user.email}</Col>
+                ) : (
+                  <Col className="text-right">Loading</Col>
+                )}
               </Row>
               <Row className="mt-3">
                 <Col>Phone</Col>
-                <Col className="text-right">08212345678</Col>
+                {user ? (
+                  <Col className="text-right">{user.phone}</Col>
+                ) : (
+                  <Col className="text-right">Loading</Col>
+                )}
               </Row>
             </Card.Body>
           </Card>
@@ -101,9 +147,15 @@ export default function Profile(props) {
               >
                 <Form.Label>Age</Form.Label>
                 <Form.Control as="select" name="age">
-                  <option>Adult</option>
-                  <option>Kid</option>
-                  <option>Old</option>
+                  {Age.data ? (
+                    Age.data.map((item, index) => (
+                      <option key={index} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>Loading</option>
+                  )}
                 </Form.Control>
               </Form.Group>
 
@@ -113,16 +165,22 @@ export default function Profile(props) {
               >
                 <Form.Label>Species</Form.Label>
                 <Form.Control as="select" name="species">
-                  <option>Cat</option>
-                  <option>Dog</option>
-                  <option>Deer</option>
+                  {Species.data ? (
+                    Species.data.map((item, index) => (
+                      <option key={index} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option>Loading</option>
+                  )}
                 </Form.Control>
               </Form.Group>
               <Row>
                 <Col className="text-center">
-                  <Link to="/">
-                    <Button className="btn btn-danger">Log Out</Button>
-                  </Link>
+                  <Button className="btn btn-danger" onClick={flogout}>
+                    Log Out
+                  </Button>
                 </Col>
               </Row>
               <div></div>
@@ -151,11 +209,9 @@ export default function Profile(props) {
     );
   }
 
-  function PetProfile(props) {
+  function PetProfile({ pet, payment }) {
     const [show, setShow] = useState(false);
     const [showMessage, setShowMessage] = useState(false);
-
-    const [premium, setPremium] = useState(false);
 
     return (
       <div>
@@ -170,14 +226,11 @@ export default function Profile(props) {
           </Modal.Body>
         </Modal>
         <Row>
-          {premium ? (
+          {payment.status == "premium" ? (
             <Link to="/add">
               <button
                 className="btn btn-addpet text-white"
                 style={{ marginLeft: "55rem", marginTop: "1vh" }}
-                onClick={() => {
-                  setPremium(false);
-                }}
               >
                 Add Pet
               </button>
@@ -218,17 +271,17 @@ export default function Profile(props) {
                 <Row>
                   <Col>
                     <h5>
-                      <strong>Pet Name</strong>
+                      <strong>{pet.name}</strong>
                     </h5>
                   </Col>
                   <Col className="text-muted text-right">
-                    <h5>Pet Species</h5>
+                    <h5>{pet.petSpecies.name}</h5>
                   </Col>
                 </Row>
 
                 <h6>
                   <i className="fas fa-user-alt mr-2"></i>
-                  <strong>..Breeder</strong>
+                  <strong>{pet.owner.breeder}</strong>
                 </h6>
                 <h6>
                   <i className="fas fa-map-marker-alt mr-2"></i>
@@ -237,31 +290,25 @@ export default function Profile(props) {
 
                 <h6>
                   <i className="fas fa-venus-mars  mr-2"></i>
-                  <strong>..Old..-..gender..</strong>
+                  <strong>
+                    {pet.petAge.name} - {pet.gender}
+                  </strong>
                 </h6>
                 <h6>
                   <i className="fas fa-phone mr-2"></i>
-                  <strong>...Phone</strong>
+                  <strong>{pet.owner.phone}</strong>
                 </h6>
 
                 <h5 className="mt-3">
                   <strong>About Pet</strong>
                 </h5>
-                <p>
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Corporis et quasi cum perspiciatis placeat exercitationem
-                  sequi nostrum ipsam cumque qui.
-                </p>
+                <p>{pet.about_pet}</p>
               </div>
             </div>
           </div>
-
-          <Button
-            className="btn btn-success btn-block "
-            onClick={() => setPosition("edit")}
-          >
-            Edit
-          </Button>
+          <Link to="/edit">
+            <Button className="btn btn-success btn-block ">Edit</Button>
+          </Link>
         </div>
 
         <Modal show={show} onHide={() => setShow(false)}>
@@ -300,7 +347,6 @@ export default function Profile(props) {
                 onClick={() => {
                   setShowMessage(true);
                   setShow(false);
-                  setPremium(true);
                 }}
               >
                 Send
@@ -311,110 +357,25 @@ export default function Profile(props) {
       </div>
     );
   }
-  function PetProfileEdit() {
-    return (
-      <div>
-        <Card
-          style={{
-            width: "30rem",
-            height: "37rem",
-            margin: "0 auto",
-            float: "none",
-            marginTop: "1rem",
-            background: "white",
-            overflowX: "hidden",
-            overflowY: "auto"
-          }}
-        >
-          <div className="mt-1 mb-1 ml-1 mr-1">
-            <Row className="mt-1 mb-1 ml-1 mr-1">
-              <PetList pets={pets} />
-              <div className="border mt-2" style={{ width: "100%" }}>
-                <Form className="mt-1 mb-1 ml-1 mr-1">
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>Pet Name</Form.Label>
-                    <Form.Control type="text" placeholder="Pet Name" />
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlInput1">
-                    <Form.Label>Breeder</Form.Label>
-                    <Form.Control type="text" placeholder="Breeder" />
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>Age</Form.Label>
-                    <Form.Control as="select" name="age">
-                      <option>Adult</option>
-                      <option>Kid</option>
-                      <option>Old</option>
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlSelect1">
-                    <Form.Label>Gender</Form.Label>
-                    <Form.Control as="select" name="age">
-                      <option>Male</option>
-                      <option>Female</option>
-                    </Form.Control>
-                  </Form.Group>
-                  <Form.Group controlId="exampleForm.ControlTextarea1">
-                    <Form.Label>Pet Description</Form.Label>
-                    <Form.Control as="textarea" rows="3" />
-                  </Form.Group>
+};
+const mapStateToProps = state => {
+  return {
+    auth: state.auth,
+    age: state.age,
+    species: state.species,
+    pet: state.pet,
+    payment: state.payment
+  };
+};
 
-                  <Button
-                    className="btn btn-success btn-block"
-                    onClick={() => setPosition("profile")}
-                  >
-                    Save
-                  </Button>
-                </Form>
-              </div>
-            </Row>
-          </div>
-        </Card>
-      </div>
-    );
-  }
+const mapDispatchToProps = dispatch => {
+  return {
+    getAllPet: () => dispatch(getAllPet()),
+    getDetailPet: id => dispatch(getDetailPet(id)),
+    getAllAges: () => dispatch(getAllAges()),
+    getAllSpecies: () => dispatch(getAllSpecies()),
+    getPayment: () => dispatch(getPayment())
+  };
+};
 
-  function PetList(props) {
-    return props.pets.map(pets => (
-      <Card
-        className="bg-transparent fluid border"
-        style={{
-          width: "10vw",
-          marginLeft: "1rem",
-          marginTop: "1rem"
-        }}
-        key={pets.index}
-      >
-        <div
-          style={{
-            width: "150px",
-            height: "20vh"
-          }}
-        >
-          <div class="image-upload">
-            <label for="file-input">
-              <img
-                src={pets.pics}
-                style={{
-                  width: "135px",
-                  height: "135px"
-                }}
-                className="img-thumbnail"
-                alt="..."
-              ></img>
-            </label>
-
-            <input id="file-input" type="file" />
-          </div>
-        </div>
-        <Row className="mb-1 mt-3">
-          <Col className="text-center">
-            <Button className="btn btn-danger ml-1">
-              <i class="fas fa-times"></i>
-            </Button>
-          </Col>
-        </Row>
-      </Card>
-    ));
-  }
-}
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);

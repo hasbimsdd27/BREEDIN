@@ -40,6 +40,34 @@ exports.sendPayment = async (req, res) => {
   }
 };
 
+exports.getPayment = async (req, res) => {
+  try {
+    const user = req.user;
+    let paymentData = await Payment.findOne({
+      where: {
+        user
+      },
+      include: [
+        {
+          model: User,
+          as: "userDetail",
+          attributes: {
+            exclude: ["email", "password", "createdAt", "updatedAt"]
+          }
+        }
+      ],
+      attributes: { exclude: ["user"] }
+    });
+    res.status(200).send({
+      status: true,
+      message: "detail payment successfully getted",
+      data: paymentData
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};
+
 exports.updatePayment = async (req, res) => {
   try {
     const { id } = req.params;

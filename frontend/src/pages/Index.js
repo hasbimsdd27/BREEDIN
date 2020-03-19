@@ -1,12 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Navbar, Image, Row, Col, Card, Form, Button } from "react-bootstrap";
 import pets from "./swipe/dataMatch.json";
 import App from "./swipe/App";
-import { Link } from "react-router-dom";
+import { Link, Redirect } from "react-router-dom";
+import { connect } from "react-redux";
+import { getAllPet, getDetailPet } from "../_actions/pet";
 
-export default function IndexAPP() {
+const Index = props => {
+  const getPet = async () => {
+    await props.getAllPet();
+    await props.getDetailPet(localStorage.getItem("onPet"));
+  };
+
+  useEffect(() => {
+    getPet();
+  }, []);
+  const Pet = props.pet;
   const [navbar, setNavbar] = useState(true);
-  function LeftBox() {
+
+  function LeftBox({ petData, petArray }) {
+    console.log(petData, petArray);
     return (
       <div className="boxLeft">
         <div>
@@ -27,13 +40,12 @@ export default function IndexAPP() {
               style={{ paddingLeft: "1rem", paddingTop: "1rem" }}
               controlId="exampleForm.ControlSelect1"
             >
-              <Form.Control as="select">
-                <option>Pet 1</option>
-                <option>Pet 2</option>
-                <option>Pet 3</option>
-                <option>Pet 4</option>
-                <option>Pet 5</option>
-                <option>Pet 6</option>
+              <Form.Control as="select" value={petData.id}>
+                {petArray.map((item, index) => (
+                  <option key={index} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
               </Form.Control>
             </Form.Group>
           </Navbar>
@@ -141,13 +153,26 @@ export default function IndexAPP() {
       </Row>
     );
   }
-  return (
+  const Token = localStorage.getItem("token");
+  return !props.auth.isLogin && !Token ? (
+    <Redirect
+      to={{
+        pathname: "/"
+      }}
+    />
+  ) : (
     <div className="wrap">
-      <LeftBox />
-      <RightBox />
+      {props.pet.loading ? (
+        <h1>Loading...</h1>
+      ) : (
+        <>
+          <LeftBox petData={Pet.detail} petArray={Pet.data} />
+          <RightBox />
+        </>
+      )}
     </div>
   );
-}
+};
 
 function PetList(props) {
   return props.pets.map(pets => (
@@ -184,3 +209,20 @@ function PetList(props) {
     </Col>
   ));
 }
+const mapStateToProps = state => {
+  return {
+    auth: state.auth,
+    age: state.age,
+    species: state.species,
+    pet: state.pet
+  };
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    getAllPet: () => dispatch(getAllPet()),
+    getDetailPet: id => dispatch(getDetailPet(id))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

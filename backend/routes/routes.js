@@ -3,6 +3,7 @@ const router = express.Router();
 const { login, register } = require("../controller/auth");
 const { createSpecies, loadAllSpecies } = require("../controller/petSpecies");
 const { auth, authAdmin } = require("../middleware/auth");
+const { loadAllAges } = require("../controller/ages");
 const { algoMatch } = require("../controller/algoMatch");
 const {
   addPet,
@@ -18,7 +19,11 @@ const {
   updateMatch,
   getMatched
 } = require("../controller/match");
-const { sendPayment, updatePayment } = require("../controller/payment");
+const {
+  sendPayment,
+  updatePayment,
+  getPayment
+} = require("../controller/payment");
 
 router.post("/login", login);
 
@@ -27,8 +32,10 @@ router.post("/register", register);
 router.post("/species", createSpecies);
 router.get("/species", loadAllSpecies);
 
+router.get("/ages", loadAllAges);
+
 router.post("/pet", auth, addPet);
-router.get("/pets", loadAllPet);
+router.get("/pets", auth, loadAllPet);
 router.patch("/pet/:id", auth, updatePet);
 router.get("/pet/:id", detailPet);
 router.delete("/pet/:id", auth, deletePet);
@@ -43,6 +50,7 @@ router.post("/match", auth, createMatch);
 router.patch("/match/:id", auth, updateMatch);
 router.get("/matches", auth, getMatched);
 
+router.get("/payment", auth, getPayment);
 router.post("/payment", authAdmin, sendPayment);
 router.put("/payment/:id", authAdmin, updatePayment);
 module.exports = router;
