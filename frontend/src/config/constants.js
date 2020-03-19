@@ -9,3 +9,4 @@ export const GET_PET = "GET_PET";
 export const GET_DETAIL_PET = "GET_DETAIL_PET";
 export const GET_PAYMENT = "GET_PAYMENT";
 export const UPDATE_PET = "UPDATE_PET";
+export const ADD_PET = "ADD_PET";

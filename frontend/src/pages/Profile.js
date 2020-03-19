@@ -48,7 +48,11 @@ const Profile = props => {
         pathname: "/"
       }}
     />
-  ) : props.pet.loading || !user ? (
+  ) : props.pet.loading ||
+    !user ||
+    props.age.loading ||
+    props.species.loading ||
+    props.species.payment ? (
     <h1>Loading...</h1>
   ) : (
     <div className="wrap">

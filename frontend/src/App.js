@@ -14,38 +14,31 @@ import { AnimatedSwitch } from "react-router-transition";
 export default function App() {
   return (
     <Router>
-      <AnimatedSwitch
-        atEnter={{ opacity: 0 }}
-        atLeave={{ opacity: 0 }}
-        atActive={{ opacity: 1 }}
-        className="switch-wrapper"
-      >
-        <Route path="/profile">
-          <ProfileAPP />
-        </Route>
-        <Route path="/register">
-          <Register />
-        </Route>
-        <Route path="/login">
-          <Login />
-        </Route>
-        <Route path="/coba">
-          <CobaAPP />
-        </Route>
-        <Route path="/main">
-          <IndexAPP />
-        </Route>
-        <Route path="/edit">
-          <EditAPP />
-        </Route>
+      <Route path="/profile">
+        <ProfileAPP />
+      </Route>
+      <Route path="/register">
+        <Register />
+      </Route>
+      <Route path="/login">
+        <Login />
+      </Route>
+      <Route path="/coba">
+        <CobaAPP />
+      </Route>
+      <Route path="/main">
+        <IndexAPP />
+      </Route>
+      <Route path="/edit">
+        <EditAPP />
+      </Route>
 
-        <Route path="/add">
-          <AddAPP />
-        </Route>
-        <Route path="/">
-          <Landing />
-        </Route>
-      </AnimatedSwitch>
+      <Route path="/add">
+        <AddAPP />
+      </Route>
+      <Route path="/">
+        <Landing />
+      </Route>
     </Router>
   );
 }

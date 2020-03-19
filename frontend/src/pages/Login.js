@@ -15,7 +15,7 @@ const Login = props => {
     };
     props.postLogin(data);
   };
-  console.log(props.auth.isLogin || Token);
+
   return props.auth.isLogin || Token ? (
     <Redirect
       to={{

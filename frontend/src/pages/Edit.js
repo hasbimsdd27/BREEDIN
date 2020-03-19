@@ -44,7 +44,7 @@ const Edit = props => {
         pathname: "/"
       }}
     />
-  ) : props.pet.loading || !user ? (
+  ) : props.pet.loading && !user ? (
     <h1>Loading...</h1>
   ) : redirect ? (
     <Redirect

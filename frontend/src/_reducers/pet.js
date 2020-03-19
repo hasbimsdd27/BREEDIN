@@ -1,4 +1,9 @@
-import { GET_PET, GET_DETAIL_PET } from "../config/constants";
+import {
+  GET_PET,
+  GET_DETAIL_PET,
+  UPDATE_PET,
+  ADD_PET
+} from "../config/constants";
 
 const initialState = {
   data: [],
@@ -11,6 +16,8 @@ const Auth = (state = initialState, action) => {
   switch (action.type) {
     case `${GET_PET}_PENDING`:
     case `${GET_DETAIL_PET}_PENDING`:
+    case `${UPDATE_PET}_PENDING`:
+    case `${ADD_PET}_PENDING`:
       return {
         ...state,
         loading: true
@@ -23,12 +30,16 @@ const Auth = (state = initialState, action) => {
       };
     case `${GET_PET}_REJECTED`:
     case `${GET_DETAIL_PET}_REJECTED`:
+    case `${UPDATE_PET}_REJECTED`:
+    case `${ADD_PET}_REJECTED`:
       return {
         ...state,
-        data: false,
+        loading: false,
         error: true
       };
     case `${GET_DETAIL_PET}_FULFILLED`:
+    case `${UPDATE_PET}_FULFILLED`:
+    case `${ADD_PET}_FULFILLED`:
       return {
         ...state,
         detail: action.payload,

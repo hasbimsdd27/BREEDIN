@@ -1,4 +1,9 @@
-import { GET_PET, GET_DETAIL_PET, UPDATE_PET } from "../config/constants";
+import {
+  GET_PET,
+  GET_DETAIL_PET,
+  UPDATE_PET,
+  ADD_PET
+} from "../config/constants";
 import { API, setAuthToken } from "../config/api";
 
 export const getAllPet = () => {
@@ -9,7 +14,9 @@ export const getAllPet = () => {
       setAuthToken(Token);
       const res = await API.get("pets");
       if (res) {
-        localStorage.setItem("onPet", res.data.data[0].id);
+        if (!localStorage.getItem("onPet")) {
+          localStorage.setItem("onPet", res.data.data[0].id);
+        }
       }
       return res.data.data;
     }
@@ -36,6 +43,22 @@ export const updatePet = (id, data) => {
     payload: async () => {
       setAuthToken(Token);
       const res = await API.patch(`pet/${id}`, data);
+      return res.data.data;
+    }
+  };
+};
+
+export const addPet = data => {
+  const Token = localStorage.getItem("token");
+  return {
+    type: ADD_PET,
+    payload: async () => {
+      setAuthToken(Token);
+      const res = await API.post(`pet`, data);
+      if (res) {
+        localStorage.setItem("onPet", res.data.data.id);
+      }
+      console.log(res);
       return res.data.data;
     }
   };

@@ -18,8 +18,13 @@ const Index = props => {
   const Pet = props.pet;
   const [navbar, setNavbar] = useState(true);
 
-  function LeftBox({ petData, petArray }) {
-    console.log(petData, petArray);
+  const handleOnChange = (e, id) => {
+    e.preventDefault();
+    props.getDetailPet(id);
+    localStorage.setItem("onPet", id);
+  };
+
+  function LeftBox({ petData, petArray, handleOnChange }) {
     return (
       <div className="boxLeft">
         <div>
@@ -40,7 +45,13 @@ const Index = props => {
               style={{ paddingLeft: "1rem", paddingTop: "1rem" }}
               controlId="exampleForm.ControlSelect1"
             >
-              <Form.Control as="select" value={petData.id}>
+              <Form.Control
+                as="select"
+                defaultValue={petData.id}
+                onChange={e => {
+                  handleOnChange(e, e.target.value);
+                }}
+              >
                 {petArray.map((item, index) => (
                   <option key={index} value={item.id}>
                     {item.name}
@@ -166,7 +177,11 @@ const Index = props => {
         <h1>Loading...</h1>
       ) : (
         <>
-          <LeftBox petData={Pet.detail} petArray={Pet.data} />
+          <LeftBox
+            petData={Pet.detail}
+            petArray={Pet.data}
+            handleOnChange={handleOnChange}
+          />
           <RightBox />
         </>
       )}

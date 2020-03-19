@@ -4,7 +4,7 @@ import { Link, Redirect } from "react-router-dom";
 import Slider from "react-input-slider";
 import pets from "./swipe/dataSlot.json";
 import { connect } from "react-redux";
-import { getAllPet, getDetailPet, updatePet } from "../_actions/pet";
+import { getAllPet, getDetailPet, updatePet, addPet } from "../_actions/pet";
 import { getAllAges } from "../_actions/age";
 import { getAllSpecies } from "../_actions/species";
 import { getPayment } from "../_actions/payment";
@@ -31,8 +31,9 @@ const Add = props => {
   const [redirect, setRedirect] = useState(false);
   const handleSubmit = async (e, data) => {
     e.preventDefault();
-    const res = await props.updatePet(localStorage.getItem("onPet"), data);
-    if (res.action.type == "UPDATE_PET_FULFILLED") {
+    console.log(data);
+    const res = await props.addPet(data);
+    if (res.action.type == "ADD_PET_FULFILLED") {
       setRedirect(true);
     }
   };
@@ -45,9 +46,9 @@ const Add = props => {
         pathname: "/"
       }}
     />
-  ) : props.pet.loading || !user ? (
+  ) : props.pet.loading && !user ? (
     <h1>Loading...</h1>
-  ) : redirect ? (
+  ) : redirect || props.payment.data.status == "free" ? (
     <Redirect
       to={{
         pathname: "/profile"
@@ -67,6 +68,7 @@ const Add = props => {
         <PetProfileEdit
           pet={props.pet.detail}
           Age={props.age}
+          Species={props.species}
           submit={handleSubmit}
         />
       </div>
@@ -211,18 +213,19 @@ function SliderInput() {
   );
 }
 
-function PetProfileEdit({ pet, Age, submit }) {
+function PetProfileEdit({ pet, Age, submit, Species }) {
   const [name, setName] = useState(null);
   const [gender, setGender] = useState(null);
   const [age, setAge] = useState(null);
   const [aboutpet, setAboutPet] = useState(null);
+  const [species, setSpecies] = useState(null);
 
   const handleEdit = e => {
     e.preventDefault();
-    // submit(e, "ckuaks");
     const data = {
       name,
       gender,
+      species,
       age,
       about_pet: aboutpet
     };
@@ -249,7 +252,6 @@ function PetProfileEdit({ pet, Age, submit }) {
                   <Form.Control
                     type="text"
                     placeholder="Pet Name"
-                    defaultValue={name}
                     onChange={e => {
                       setName(e.target.value);
                     }}
@@ -261,7 +263,6 @@ function PetProfileEdit({ pet, Age, submit }) {
                   <Form.Control
                     as="select"
                     name="age"
-                    defaultValue={age}
                     onChange={e => {
                       setAge(e.target.value);
                     }}
@@ -278,11 +279,30 @@ function PetProfileEdit({ pet, Age, submit }) {
                   </Form.Control>
                 </Form.Group>
                 <Form.Group controlId="exampleForm.ControlSelect1">
+                  <Form.Label>Species</Form.Label>
+                  <Form.Control
+                    as="select"
+                    name="age"
+                    onChange={e => {
+                      setSpecies(e.target.value);
+                    }}
+                  >
+                    {Species.data ? (
+                      Species.data.map((item, index) => (
+                        <option key={index} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option>Loading</option>
+                    )}
+                  </Form.Control>
+                </Form.Group>
+                <Form.Group controlId="exampleForm.ControlSelect1">
                   <Form.Label>Gender</Form.Label>
                   <Form.Control
                     as="select"
                     name="age"
-                    defaultValue={gender}
                     onChange={e => {
                       setGender(e.target.value);
                     }}
@@ -296,7 +316,6 @@ function PetProfileEdit({ pet, Age, submit }) {
                   <Form.Control
                     as="textarea"
                     rows="3"
-                    defaultValue={aboutpet}
                     onChange={e => {
                       setAboutPet(e.target.value);
                     }}
@@ -375,7 +394,8 @@ const mapDispatchToProps = dispatch => {
     getAllAges: () => dispatch(getAllAges()),
     getAllSpecies: () => dispatch(getAllSpecies()),
     getPayment: () => dispatch(getPayment()),
-    updatePet: (id, data) => dispatch(updatePet(id, data))
+    updatePet: (id, data) => dispatch(updatePet(id, data)),
+    addPet: data => dispatch(addPet(data))
   };
 };
 

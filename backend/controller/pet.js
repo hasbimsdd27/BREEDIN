@@ -8,8 +8,9 @@ const Age = models.age;
 const Payment = models.payment;
 
 exports.addPet = async (req, res) => {
-  const { name, gender, spesies, age, about_pet, photo } = req.body;
+  const { name, gender, species, age, about_pet } = req.body;
   let datetime = new Date();
+  console.log({ name, gender, species, age, about_pet });
   let user = req.user;
   try {
     const premium = await Payment.findOne({
@@ -23,8 +24,8 @@ exports.addPet = async (req, res) => {
       const petInput = await Pet.create({
         name,
         gender,
-        species: spesies.id,
-        age: age.id,
+        species,
+        age,
         breeder: user,
         about_pet,
         createdAt: datetime,
@@ -38,8 +39,9 @@ exports.addPet = async (req, res) => {
         where: {
           name,
           gender,
-          species: spesies.id,
-          age: age.id
+          species,
+          age,
+          about_pet
         },
         include: [
           {
@@ -63,18 +65,9 @@ exports.addPet = async (req, res) => {
         attributes: { exclude: ["species", "age", "breeder"] }
       });
 
-      const photoInput = await Photo.create({
-        pet: petData.id,
-        path: photo
-      });
-
-      if (!photoInput) {
-        throw new Error();
-      }
-      let data = petData;
       res.status(201).send({
         message: "successfuly add pet",
-        data
+        data: petData
       });
     }
   } catch (err) {
